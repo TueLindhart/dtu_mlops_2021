@@ -1,26 +1,31 @@
+import argparse
+import os
+import sys
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import torch
+import torch.nn.functional as F
+import torchvision
+from torch import nn, optim
+from torch.utils.tensorboard import SummaryWriter
+
+from src.data.make_dataset import mnist
 from src.models.model import MyAwesomeModel
 from src.settings import FIGURE_PATH, MODEL_PATH
 
-import sys
-import os
-import argparse
-
-import torch
-from torch import nn, optim
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
-import seaborn as sns
-from src.data.make_dataset import mnist
 sns.set_theme()
+
+writer = SummaryWriter()
 
 
 def train():
     print("Training day and night")
-    parser = argparse.ArgumentParser(description='Training arguments')
-    parser.add_argument('--lr', default=1e-4, type=float)
-    parser.add_argument('--e', default=10, type=int)
-    parser.add_argument('--name', default='base_model', type=str)
-    parser.add_argument('--show_plot', default=False, type=bool)
+    parser = argparse.ArgumentParser(description="Training arguments")
+    parser.add_argument("--lr", default=1e-4, type=float)
+    parser.add_argument("--e", default=10, type=int)
+    parser.add_argument("--name", default="base_model", type=str)
+    parser.add_argument("--show_plot", default=False, type=bool)
 
     # add any additional argument that you want
     args = parser.parse_args(sys.argv[2:])
@@ -29,6 +34,12 @@ def train():
     # TODO: Implement training loop here
     model = MyAwesomeModel()
     train_set, test_set = mnist()
+
+    images, labels = next(iter(train_set))
+    grid = torchvision.utils.make_grid(images)
+    writer.add_image("images", grid, 0)
+    writer.add_graph(model, images)
+    writer.close()
 
     # Define criterion
     criterion = nn.CrossEntropyLoss()
@@ -60,8 +71,9 @@ def train():
                 running_loss += loss.item()
 
             else:
-                running_loss = running_loss/len(test_set)
+                running_loss = running_loss / len(test_set)
                 running_eval_loss_epoch.append(running_loss)
+                writer.add_scalar("Loss/test", running_loss, e + 1)
                 print(f"Epoch {e+1}, Validation loss: {running_loss}")
 
         running_loss = 0
@@ -85,26 +97,28 @@ def train():
             running_loss += loss.item()
 
         else:
-            running_loss = running_loss/len(train_set)
+            running_loss = running_loss / len(train_set)
             running_loss_epoch.append(running_loss)
+
+            writer.add_scalar("Loss/train", running_loss, e + 1)
             print(f"Epoch {e+1}, Training loss: {running_loss}")
-            print('')
+            print("")
 
     else:
 
         # Save model
-        torch.save(model.state_dict(), os.path.join(MODEL_PATH, f'{args.name}.pth'))
+        torch.save(model.state_dict(), os.path.join(MODEL_PATH, f"{args.name}.pth"))
 
         # Plot training progress
         plt.figure(figsize=(5, 5))
-        plt.plot(range(1, e+2), running_loss_epoch, label='Train loss')
-        plt.plot(range(1, e+2), running_eval_loss_epoch, label='Validation loss')
+        plt.plot(range(1, e + 2), running_loss_epoch, label="Train loss")
+        plt.plot(range(1, e + 2), running_eval_loss_epoch, label="Validation loss")
         plt.ylim(0, 0.5)
-        plt.xlabel('Epochs')
-        plt.ylabel('Cross-entropy loss')
-        plt.title(f'Training loss for model {args.name}')
+        plt.xlabel("Epochs")
+        plt.ylabel("Cross-entropy loss")
+        plt.title(f"Training loss for model {args.name}")
         plt.legend()
-        plt.savefig(os.path.join(FIGURE_PATH, 'training_plots', f'{args.name}.png'))
+        plt.savefig(os.path.join(FIGURE_PATH, "training_plots", f"{args.name}.png"))
 
         if args.show_plot:
             plt.show()
@@ -113,16 +127,16 @@ def train():
 
 def eval():
     print("Evaluating until hitting the ceiling")
-    parser = argparse.ArgumentParser(description='Evaluation arguments')
-    parser.add_argument('--load_model_from', default=MODEL_PATH, type=str)
-    parser.add_argument('--name', default='base_model', type=str)
+    parser = argparse.ArgumentParser(description="Evaluation arguments")
+    parser.add_argument("--load_model_from", default=MODEL_PATH, type=str)
+    parser.add_argument("--name", default="base_model", type=str)
     # add any additional argument that you want
     args = parser.parse_args(sys.argv[2:])
     print(args)
 
     # TODO: Implement evaluation logic here
     if args.name:
-        state_dict = torch.load(os.path.join(args.load_model_from, args.name+'.pth'))
+        state_dict = torch.load(os.path.join(args.load_model_from, args.name + ".pth"))
         model = MyAwesomeModel()
         model.load_state_dict(state_dict)
 
@@ -155,4 +169,4 @@ def eval():
             accuracy = torch.mean(equals.type(torch.FloatTensor))
 
             # Print validation accuracy of model
-            print(f'Validation accuracy: {accuracy.item()*100}%')
+            print(f"Validation accuracy: {accuracy.item()*100}%")

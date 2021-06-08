@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-import click
 import logging
-from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
-
 import os
+from pathlib import Path
+
+import click
 import torch
+from dotenv import find_dotenv, load_dotenv
 from torchvision import datasets, transforms
+
 from src.settings import MODULE_PATH
 
 

@@ -1,5 +1,5 @@
-import sys
 import argparse
+import sys
 
 from src.models import predict_model, train_model
 

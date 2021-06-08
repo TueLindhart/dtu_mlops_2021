@@ -1,13 +1,13 @@
-import sys
-import os
 import argparse
-
-from src.models.model import MyAwesomeModel
-from src.settings import MODEL_PATH
+import os
+import sys
 
 import torch
 import torch.nn.functional as F
+
 from src.data.make_dataset import mnist
+from src.models.model import MyAwesomeModel
+from src.settings import MODEL_PATH
 
 
 def predict():

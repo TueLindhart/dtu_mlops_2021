@@ -1,14 +1,16 @@
-from src.settings import MODEL_PATH, FIGURE_PATH
-from src.models.model import MyAwesomeModel
+import argparse
+import os
+import sys
 
 import matplotlib.pyplot as plt
-import os
-from src.data.make_dataset import mnist
-from sklearn.manifold import TSNE
-import sys
-import argparse
-import torch
 import seaborn as sns
+import torch
+from sklearn.manifold import TSNE
+
+from src.data.make_dataset import mnist
+from src.models.model import MyAwesomeModel
+from src.settings import FIGURE_PATH, MODEL_PATH
+
 sns.set_theme()
 
 
