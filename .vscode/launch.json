@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Models/main.py train",
+            "name": "Python: Models/main.py train experiment 1",
             "type": "python",
             "request": "launch",
             "program": "${workspaceRoot}/src/models/main.py",
             "console": "integratedTerminal",
-            "args":["train","--lr","5e-4","--e","1","--name","tensorviz_model"]
+            "args":["train","--lr","1e-4","--e","10","--name","tensorviz_model_exp_1",
+                "--tb_name","exp_1_lr_1e-4"]
+        },
+        {
+            "name": "Python: Models/main.py train experiment 2",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceRoot}/src/models/main.py",
+            "console": "integratedTerminal",
+            "args":["train","--lr","5e-4","--e","10","--name","tensorviz_model_exp_2",
+                   "--tb_name","exp_2_lr_5e-4"]
         }
     ]
 }

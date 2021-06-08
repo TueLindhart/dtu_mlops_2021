@@ -16,8 +16,6 @@ from src.settings import FIGURE_PATH, MODEL_PATH
 
 sns.set_theme()
 
-writer = SummaryWriter()
-
 
 def train():
     print("Training day and night")
@@ -26,6 +24,7 @@ def train():
     parser.add_argument("--e", default=10, type=int)
     parser.add_argument("--name", default="base_model", type=str)
     parser.add_argument("--show_plot", default=False, type=bool)
+    parser.add_argument("--tb_name", default='def', type=str)
 
     # add any additional argument that you want
     args = parser.parse_args(sys.argv[2:])
@@ -35,6 +34,8 @@ def train():
     model = MyAwesomeModel()
     train_set, test_set = mnist()
 
+    writer = SummaryWriter(log_dir=os.path.join("runs", args.tb_name))
+    # writer = SummaryWriter()
     images, labels = next(iter(train_set))
     grid = torchvision.utils.make_grid(images)
     writer.add_image("images", grid, 0)
@@ -73,7 +74,8 @@ def train():
             else:
                 running_loss = running_loss / len(test_set)
                 running_eval_loss_epoch.append(running_loss)
-                writer.add_scalar("Loss/test", running_loss, e + 1)
+                writer.add_scalar("Loss/test", running_loss, e + 1)  # change to add_scalars
+                writer.close()
                 print(f"Epoch {e+1}, Validation loss: {running_loss}")
 
         running_loss = 0
@@ -100,14 +102,36 @@ def train():
             running_loss = running_loss / len(train_set)
             running_loss_epoch.append(running_loss)
 
-            writer.add_scalar("Loss/train", running_loss, e + 1)
+            writer.add_scalar("Loss/train", running_loss, e + 1)  # change to add_scalars
+            writer.close()
             print(f"Epoch {e+1}, Training loss: {running_loss}")
             print("")
+
+            # Add histogram for weights
+            writer.add_histogram("Weights/conv1.bias", model.conv1.bias, e + 1)
+            writer.add_histogram("Weights/conv1.weight", model.conv1.weight, e + 1)
+            writer.add_histogram("Weights/conv2.bias", model.conv2.bias, e + 1)
+            writer.add_histogram("Weights/conv2.weight", model.conv2.weight, e + 1)
+            writer.add_histogram("Weights/fc1.weight", model.fc1.weight, e + 1)
+            writer.add_histogram("Weights/fc1.bias", model.fc1.bias, e + 1)
+            writer.add_histogram("Weights/fc2.weight", model.fc2.weight, e + 1)
+            writer.add_histogram("Weights/fc2.bias", model.fc2.bias, e + 1)
+            writer.add_histogram("Weights/fc3.weight", model.fc3.weight, e + 1)
+            writer.add_histogram("Weights/fc3.bias", model.fc3.bias, e + 1)
+            writer.close()
 
     else:
 
         # Save model
         torch.save(model.state_dict(), os.path.join(MODEL_PATH, f"{args.name}.pth"))
+
+        last_train_loss = running_loss_epoch[-1]
+        last_eval_loss = running_eval_loss_epoch[-1]
+
+        writer.add_hparams({'lr': args.lr, 'epochs': args.e},
+                           {'hparam/train_loss': last_train_loss,
+                            'hparam/eval_loss': last_eval_loss})
+        writer.close()
 
         # Plot training progress
         plt.figure(figsize=(5, 5))
