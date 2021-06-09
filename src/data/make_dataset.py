@@ -25,14 +25,14 @@ def mnist(tensor_in_ram=True):
                              transform=transform)
 
     if tensor_in_ram:
-        train_d = trainset.data
+        train_d = trainset.data.view(-1, 1, 28, 28).div(255.)
         train_t = trainset.targets
 
-        test_d = testset.data
+        test_d = testset.data.view(-1, 1, 28, 28).div(255.)
         test_t = testset.targets
 
-        trainset = torch.utils.data.Dataset(train_d, train_t)
-        testset = torch.utils.data.Dataset(test_d, test_t)
+        trainset = torch.utils.data.TensorDataset(train_d, train_t)
+        testset = torch.utils.data.TensorDataset(test_d, test_t)
 
     return trainset, testset
 
