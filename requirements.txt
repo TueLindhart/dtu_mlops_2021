@@ -69,7 +69,7 @@ sphinxcontrib-htmlhelp==2.0.0
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
--e git+git@github.com:TueLindhart/dtu_mlops_2021.git@5b430958d648d78ef32575115fa03a1b4015c3ed#egg=src
+# -e git+git@github.com:TueLindhart/dtu_mlops_2021.git@5b430958d648d78ef32575115fa03a1b4015c3ed#egg=src
 tensorboard==2.5.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.0
