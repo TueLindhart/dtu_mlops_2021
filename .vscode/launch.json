@@ -31,5 +31,13 @@
             "args":["train","--lr","5e-4","--e","10","--name","basic_test",
                 "--tb_name","basic_test"]
         },
+        {
+            "name": "Python: Models/main.py eval basic_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceRoot}/src/models/main.py",
+            "console": "integratedTerminal",
+            "args":["eval","--name","basic_test"]
+        },
     ]
 }

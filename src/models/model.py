@@ -14,7 +14,13 @@ class MyAwesomeModel(nn.Module):
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 10)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
+
+        if len(x.size()) != 4:
+            raise ValueError('Expected input to be of size 4D')
+        if (x.shape[1] != 1) or (x.shape[2] != 28) or (x.shape[3] != 28):
+            raise ValueError('Expected image to have size (1,28,28)')
+
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1)  # flatten all dimensions except batch

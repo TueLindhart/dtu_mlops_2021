@@ -1,0 +1,8 @@
+[run]
+omit = 
+    venv/*
+    data/*
+    notebooks/*
+    references/*
+    reports/*
+    src.egg-info
