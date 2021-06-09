@@ -2,9 +2,9 @@ name: "Run tests"
 
 on:
   push:
-    branches: [ master ]
+    branches: [ cookiecutter ]
   pull_request:
-    branches: [ master ]
+    branches: [ cookiecutter ]
 
 jobs:
   build:
