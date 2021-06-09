@@ -24,7 +24,8 @@ def predict():
         model = MyAwesomeModel()
         model.load_state_dict(state_dict)
 
-    _, test_set = mnist(batch_size=args.bs)
+    _, test_set = mnist()
+    testloader = torch.utils.data.DataLoader(test_set, batch_size=args.bs, shuffle=False)
 
     with torch.no_grad():
 
@@ -32,7 +33,7 @@ def predict():
 
         all_predictions = []
 
-        for images, labels in test_set:
+        for images, labels in testloader:
 
             ps = F.softmax((model(images)), dim=1)
 

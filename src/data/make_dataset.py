@@ -11,7 +11,7 @@ from torchvision import datasets, transforms
 from src.settings import MODULE_PATH
 
 
-def mnist(batch_size=64, tensor_in_ram=True):
+def mnist(tensor_in_ram=True):
     # exchange with the real mnist dataset
 
     transform = transforms.Compose([transforms.ToTensor(),
@@ -34,10 +34,7 @@ def mnist(batch_size=64, tensor_in_ram=True):
         trainset = torch.utils.data.Dataset(train_d, train_t)
         testset = torch.utils.data.Dataset(test_d, test_t)
 
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
-
-    return trainloader, testloader
+    return trainset, testset
 
 
 @click.command()

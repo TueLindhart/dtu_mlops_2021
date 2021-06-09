@@ -22,6 +22,7 @@ def train():
     parser = argparse.ArgumentParser(description="Training arguments")
     parser.add_argument("--lr", default=1e-4, type=float)
     parser.add_argument("--e", default=10, type=int)
+    parser.add_argument("--bs", default=128, type=int)
     parser.add_argument("--name", default="base_model", type=str)
     parser.add_argument("--show_plot", default=False, type=bool)
     parser.add_argument("--tb_name", default='def', type=str)
@@ -34,9 +35,12 @@ def train():
     model = MyAwesomeModel()
     train_set, test_set = mnist()
 
+    trainloader = torch.utils.data.DataLoader(train_set, batch_size=args.bs, shuffle=True)
+    testloader = torch.utils.data.DataLoader(test_set, batch_size=args.bs, shuffle=False)
+
     writer = SummaryWriter(log_dir=os.path.join("runs", args.tb_name))
     # writer = SummaryWriter()
-    images, labels = next(iter(train_set))
+    images, labels = next(iter(trainloader))
     grid = torchvision.utils.make_grid(images)
     writer.add_image("images", grid, 0)
     writer.add_graph(model, images)
@@ -61,7 +65,7 @@ def train():
 
             running_loss = 0
 
-            for images, labels in test_set:
+            for images, labels in testloader:
 
                 # Run through model
                 out = model(images)
@@ -72,7 +76,7 @@ def train():
                 running_loss += loss.item()
 
             else:
-                running_loss = running_loss / len(test_set)
+                running_loss = running_loss / len(testloader)
                 running_eval_loss_epoch.append(running_loss)
                 writer.add_scalar("Loss/test", running_loss, e + 1)  # change to add_scalars
                 writer.close()
@@ -81,7 +85,7 @@ def train():
         running_loss = 0
         model.train()
 
-        for images, labels in train_set:
+        for images, labels in trainloader:
 
             # Make gradients zero
             optimizer.zero_grad()
@@ -99,7 +103,7 @@ def train():
             running_loss += loss.item()
 
         else:
-            running_loss = running_loss / len(train_set)
+            running_loss = running_loss / len(trainloader)
             running_loss_epoch.append(running_loss)
 
             writer.add_scalar("Loss/train", running_loss, e + 1)  # change to add_scalars
@@ -128,7 +132,7 @@ def train():
         last_train_loss = running_loss_epoch[-1]
         last_eval_loss = running_eval_loss_epoch[-1]
 
-        writer.add_hparams({'lr': args.lr, 'epochs': args.e},
+        writer.add_hparams({'lr': args.lr, 'epochs': args.e, 'batch_size': args.bs},
                            {'hparam/train_loss': last_train_loss,
                             'hparam/eval_loss': last_eval_loss})
         writer.close()
@@ -153,6 +157,7 @@ def eval():
     print("Evaluating until hitting the ceiling")
     parser = argparse.ArgumentParser(description="Evaluation arguments")
     parser.add_argument("--load_model_from", default=MODEL_PATH, type=str)
+    parser.add_argument("--bs", default=128, type=int)
     parser.add_argument("--name", default="base_model", type=str)
     # add any additional argument that you want
     args = parser.parse_args(sys.argv[2:])
@@ -166,6 +171,8 @@ def eval():
 
     _, test_set = mnist()
 
+    testloader = torch.utils.data.DataLoader(test_set, batch_size=args.bs, shuffle=False)
+
     with torch.no_grad():
 
         model.eval()
@@ -173,7 +180,7 @@ def eval():
         all_top_classes = []
         all_labels = []
 
-        for images, labels in test_set:
+        for images, labels in testloader:
 
             # ps = torch.exp(model(images))
             ps = F.softmax(model(images), dim=1)
