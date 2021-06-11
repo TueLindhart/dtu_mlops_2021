@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 
+from azureml.core import Run
+# import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import torch
@@ -31,12 +33,22 @@ def train():
     args = parser.parse_args(sys.argv[2:])
     print(args)
 
+    # Get the experiment run context
+    run = Run.get_context()
+
+    run.log('Name', args.name)
+    run.log('Learning Rate',  args.lr)
+    run.log('# epochs', args.e)
+    run.log('Batch size', args.bs)
+
     # TODO: Implement training loop here
     model = MyAwesomeModel()
     train_set, test_set = mnist()
 
-    trainloader = torch.utils.data.DataLoader(train_set, batch_size=args.bs, shuffle=True)
-    testloader = torch.utils.data.DataLoader(test_set, batch_size=args.bs, shuffle=False)
+    trainloader = torch.utils.data.DataLoader(
+        train_set, batch_size=args.bs, shuffle=True)
+    testloader = torch.utils.data.DataLoader(
+        test_set, batch_size=args.bs, shuffle=False)
 
     writer = SummaryWriter(log_dir=os.path.join("runs", args.tb_name))
     # writer = SummaryWriter()
@@ -78,7 +90,8 @@ def train():
             else:
                 running_loss = running_loss / len(testloader)
                 running_eval_loss_epoch.append(running_loss)
-                writer.add_scalar("Loss/test", running_loss, e + 1)  # change to add_scalars
+                writer.add_scalar("Loss/test", running_loss,
+                                  e + 1)  # change to add_scalars
                 writer.close()
                 print(f"Epoch {e+1}, Validation loss: {running_loss}")
 
@@ -106,16 +119,19 @@ def train():
             running_loss = running_loss / len(trainloader)
             running_loss_epoch.append(running_loss)
 
-            writer.add_scalar("Loss/train", running_loss, e + 1)  # change to add_scalars
+            writer.add_scalar("Loss/train", running_loss,
+                              e + 1)  # change to add_scalars
             writer.close()
             print(f"Epoch {e+1}, Training loss: {running_loss}")
             print("")
 
             # Add histogram for weights
             writer.add_histogram("Weights/conv1.bias", model.conv1.bias, e + 1)
-            writer.add_histogram("Weights/conv1.weight", model.conv1.weight, e + 1)
+            writer.add_histogram("Weights/conv1.weight",
+                                 model.conv1.weight, e + 1)
             writer.add_histogram("Weights/conv2.bias", model.conv2.bias, e + 1)
-            writer.add_histogram("Weights/conv2.weight", model.conv2.weight, e + 1)
+            writer.add_histogram("Weights/conv2.weight",
+                                 model.conv2.weight, e + 1)
             writer.add_histogram("Weights/fc1.weight", model.fc1.weight, e + 1)
             writer.add_histogram("Weights/fc1.bias", model.fc1.bias, e + 1)
             writer.add_histogram("Weights/fc2.weight", model.fc2.weight, e + 1)
@@ -127,7 +143,8 @@ def train():
     else:
 
         # Save model
-        torch.save(model.state_dict(), os.path.join(MODEL_PATH, f"{args.name}.pth"))
+        torch.save(model.state_dict(), os.path.join(
+            MODEL_PATH, f"{args.name}.pth"))
 
         last_train_loss = running_loss_epoch[-1]
         last_eval_loss = running_eval_loss_epoch[-1]
@@ -137,16 +154,24 @@ def train():
                             'hparam/eval_loss': last_eval_loss})
         writer.close()
 
+        train_accuracy = get_accuracy(model, trainloader)
+        test_accuracy = get_accuracy(model, testloader)
+
+        run.log('Train Accuracy', train_accuracy)
+        run.log('Test Accuracy', test_accuracy)
+
         # Plot training progress
         plt.figure(figsize=(5, 5))
         plt.plot(range(1, e + 2), running_loss_epoch, label="Train loss")
-        plt.plot(range(1, e + 2), running_eval_loss_epoch, label="Validation loss")
+        plt.plot(range(1, e + 2), running_eval_loss_epoch,
+                 label="Validation loss")
         plt.ylim(0, 0.5)
         plt.xlabel("Epochs")
         plt.ylabel("Cross-entropy loss")
         plt.title(f"Training loss for model {args.name}")
         plt.legend()
-        plt.savefig(os.path.join(FIGURE_PATH, "training_plots", f"{args.name}.png"))
+        plt.savefig(os.path.join(
+            FIGURE_PATH, "training_plots", f"{args.name}.png"))
 
         if args.show_plot:
             plt.show()
@@ -165,13 +190,22 @@ def eval():
 
     # TODO: Implement evaluation logic here
     if args.name:
-        state_dict = torch.load(os.path.join(args.load_model_from, args.name + ".pth"))
+        state_dict = torch.load(os.path.join(
+            args.load_model_from, args.name + ".pth"))
         model = MyAwesomeModel()
         model.load_state_dict(state_dict)
 
     _, test_set = mnist()
 
-    testloader = torch.utils.data.DataLoader(test_set, batch_size=args.bs, shuffle=False)
+    testloader = torch.utils.data.DataLoader(
+        test_set, batch_size=args.bs, shuffle=False)
+
+    accuracy = get_accuracy(model, testloader)
+
+    print(f"Validation accuracy: {accuracy.item()*100}%")
+
+
+def get_accuracy(model, dataloader):
 
     with torch.no_grad():
 
@@ -180,7 +214,7 @@ def eval():
         all_top_classes = []
         all_labels = []
 
-        for images, labels in testloader:
+        for images, labels in dataloader:
 
             # ps = torch.exp(model(images))
             ps = F.softmax(model(images), dim=1)
@@ -199,5 +233,4 @@ def eval():
             equals = all_top_classes == all_labels.view(*all_top_classes.shape)
             accuracy = torch.mean(equals.type(torch.FloatTensor))
 
-            # Print validation accuracy of model
-            print(f"Validation accuracy: {accuracy.item()*100}%")
+            return accuracy

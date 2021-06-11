@@ -5,5 +5,6 @@
         "--max-line-length=120"
     ],
     "python.pythonPath": "venv/bin/python",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "azureML.defaultWorkspaceId": "/subscriptions/a501cd0e-b841-4fca-8f92-88d7f72c806f/resourceGroups/Tue_MLOps/providers/Microsoft.MachineLearningServices/workspaces/MLOps_Tue_Trial"
 }
