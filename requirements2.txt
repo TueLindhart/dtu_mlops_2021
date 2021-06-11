@@ -1,0 +1,9 @@
+azureml-sdk
+azureml-widgets
+matplotlib
+seaborn
+torch
+torchvision
+tensorboard
+-e git+git@github.com:TueLindhart/dtu_mlops_2021.git@9333ebf0fea99411b48819cc74ea3d5a57522605#egg=src
+# -e .

@@ -12,7 +12,7 @@ ws = Workspace.from_config(os.path.join(MODULE_PATH, 'config.json'))
 
 # From a pip requirements file
 myenv = Environment.from_pip_requirements(name="azure_venv",
-                                          file_path=os.path.join(MODULE_PATH, "requirements.txt"))
+                                          file_path=os.path.join(MODULE_PATH, "requirements2.txt"))
 
 myenv.register(workspace=ws)
 
@@ -38,5 +38,5 @@ script_config.run_config.target = my_compute_target
 experiment_name = 'mnist_exp_1'
 experiment = Experiment(workspace=ws, name=experiment_name)
 run = experiment.submit(config=script_config)
-RunDetails(run).show()
+#RunDetails(run).show()
 run.wait_for_completion(show_output=True)
