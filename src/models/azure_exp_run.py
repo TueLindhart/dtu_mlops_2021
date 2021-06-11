@@ -6,25 +6,26 @@ import os
 
 from azureml.core import Workspace
 
-from azureml.core.compute import ComputeTarget
+# from azureml.core.compute import ComputeTarget
 
 ws = Workspace.from_config(os.path.join(MODULE_PATH, 'config.json'))
 
 # From a pip requirements file
-# myenv = Environment.from_pip_requirements(name="azure_venv",
-#                                          file_path=os.path.join(MODULE_PATH, "requirements.txt"))
+myenv = Environment.from_pip_requirements(name="azure_venv",
+                                          file_path=os.path.join(MODULE_PATH, "requirements.txt"))
 
-# myenv.register(workspace=ws)
+myenv.register(workspace=ws)
 
-myenv = Environment.get(workspace=ws, name="azure_venv")
+# myenv = Environment.get(workspace=ws, name="azure_venv")
 # myenv = Environment("user-managed-env")
 # myenv.python.user_managed_dependencies = './venv/bin/python'
 
-my_compute_target = ComputeTarget(workspace=ws, name='compuInstTwo')
+# my_compute_target = ComputeTarget(workspace=ws, name='compuInstTwo')
+my_compute_target = ws.compute_targets['compuInstTwo']
 # my_compute_target = "compuInstTwo"
 
 # Create a script config
-script_config = ScriptRunConfig(source_directory=MODEL_PATH,
+script_config = ScriptRunConfig(source_directory=os.path.join(MODULE_PATH, 'src', 'models'),
                                 script='main.py',
                                 compute_target=my_compute_target,
                                 arguments=["train", "--lr", 1e-4, "--e",
