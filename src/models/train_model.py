@@ -143,8 +143,8 @@ def train():
     else:
 
         # Save model
-        torch.save(model.state_dict(), os.path.join(
-            MODEL_PATH, f"{args.name}.pth"))
+        # torch.save(model.state_dict(), os.path.join(
+        #    MODEL_PATH, f"{args.name}.pth"))
 
         last_train_loss = running_loss_epoch[-1]
         last_eval_loss = running_eval_loss_epoch[-1]
