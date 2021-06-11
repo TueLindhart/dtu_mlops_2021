@@ -9,6 +9,7 @@ from azureml.core import Workspace
 # from azureml.core.compute import ComputeTarget
 
 ws = Workspace.from_config(os.path.join(MODULE_PATH, 'config.json'))
+print("------",MODULE_PATH)
 
 # From a pip requirements file
 myenv = Environment.from_pip_requirements(name="azure_venv",
