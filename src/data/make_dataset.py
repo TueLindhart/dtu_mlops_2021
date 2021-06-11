@@ -14,9 +14,10 @@ from src.settings import MODULE_PATH
 def mnist(tensor_in_ram=True):
     # exchange with the real mnist dataset
 
-    transform = transforms.Compose([transforms.ToTensor(),
-                                    transforms.Normalize((0.5,), (0.5,)),
-                                    ])
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,)),
+    ])
 
     # Download and load the training data
     trainset = datasets.MNIST(os.path.join(MODULE_PATH, 'data'), download=True, train=True,
