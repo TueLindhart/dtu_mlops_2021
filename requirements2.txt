@@ -5,5 +5,5 @@ seaborn
 torch
 torchvision
 tensorboard
-git+git://github.com/TueLindhart/dtu_mlops_2021.git@azure#egg=src
+# git+git://github.com/TueLindhart/dtu_mlops_2021.git@azure#egg=src
 # -e .

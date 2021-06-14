@@ -163,23 +163,23 @@ def train():
         run.log('Test Accuracy', test_accuracy)
 
         # Plot training progress
-        # plt.figure(figsize=(5, 5))
-        # plt.plot(range(1, e + 2), running_loss_epoch, label="Train loss")
-        # plt.plot(range(1, e + 2), running_eval_loss_epoch,
-        #          label="Validation loss")
-        # plt.ylim(0, 0.5)
-        # plt.xlabel("Epochs")
-        # plt.ylabel("Cross-entropy loss")
-        # plt.title(f"Training loss for model {args.name}")
-        # plt.legend()
+        plt.figure(figsize=(5, 5))
+        plt.plot(range(1, e + 2), running_loss_epoch, label="Train loss")
+        plt.plot(range(1, e + 2), running_eval_loss_epoch,
+                 label="Validation loss")
+        plt.ylim(0, 0.5)
+        plt.xlabel("Epochs")
+        plt.ylabel("Cross-entropy loss")
+        plt.title(f"Training loss for model {args.name}")
+        plt.legend()
 
-        # Path(TRAIN_FIGURE_PATH).mkdir(parents=True, exist_ok=True)
-        # plt.savefig(os.path.join(
-        #    TRAIN_FIGURE_PATH, f"{args.name}.png"))
+        Path(TRAIN_FIGURE_PATH).mkdir(parents=True, exist_ok=True)
+        plt.savefig(os.path.join(
+            TRAIN_FIGURE_PATH, f"{args.name}.png"))
 
-        #if args.show_plot:
-        #    plt.show()
-        #    plt.close()
+        if args.show_plot:
+            plt.show()
+            plt.close()
 
 
 def eval():
