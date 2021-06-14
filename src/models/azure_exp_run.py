@@ -36,7 +36,7 @@ script_config = ScriptRunConfig(source_directory=os.path.join(MODULE_PATH, 'src'
 script_config.run_config.target = my_compute_target
 
 # submit the experiment
-experiment_name = 'mnist_exp_1'
+experiment_name = 'mnist_exp_2'
 experiment = Experiment(workspace=ws, name=experiment_name)
 run = experiment.submit(config=script_config)
 # RunDetails(run).show()
