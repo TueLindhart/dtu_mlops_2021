@@ -1,10 +1,9 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: src
-Version: 0.1.0
+Version: 0.2.0
 Summary: Cookiecutter project for MLOps
 Home-page: UNKNOWN
 Author: Tue Lindhart Thomsen
-Author-email: UNKNOWN
 License: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN
