@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+from pathlib import Path
 
 from azureml.core import Run
 # import numpy as np
@@ -143,8 +144,9 @@ def train():
     else:
 
         # Save model
-        # torch.save(model.state_dict(), os.path.join(
-        #    MODEL_PATH, f"{args.name}.pth"))
+        Path(MODEL_PATH).mkdir(parents=True, exist_ok=True)
+        torch.save(model.state_dict(), os.path.join(
+            MODEL_PATH, f"{args.name}.pth"))
 
         last_train_loss = running_loss_epoch[-1]
         last_eval_loss = running_eval_loss_epoch[-1]
@@ -170,6 +172,8 @@ def train():
         plt.ylabel("Cross-entropy loss")
         plt.title(f"Training loss for model {args.name}")
         plt.legend()
+
+        Path(FIGURE_PATH).mkdir(parents=True, exist_ok=True)
         plt.savefig(os.path.join(
             FIGURE_PATH, "training_plots", f"{args.name}.png"))
 
