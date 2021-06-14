@@ -15,7 +15,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from src.data.make_dataset import mnist
 from src.models.model import MyAwesomeModel
-from src.settings import FIGURE_PATH, MODEL_PATH
+from src.settings import TRAIN_FIGURE_PATH, MODEL_PATH
 
 sns.set_theme()
 
@@ -173,9 +173,9 @@ def train():
         plt.title(f"Training loss for model {args.name}")
         plt.legend()
 
-        Path(FIGURE_PATH).mkdir(parents=True, exist_ok=True)
+        Path(TRAIN_FIGURE_PATH).mkdir(parents=True, exist_ok=True)
         plt.savefig(os.path.join(
-            FIGURE_PATH, "training_plots", f"{args.name}.png"))
+            TRAIN_FIGURE_PATH, f"{args.name}.png"))
 
         if args.show_plot:
             plt.show()

@@ -1,7 +1,7 @@
 from azureml.core import Experiment, ScriptRunConfig, Environment
 from azureml.widgets import RunDetails
 
-from src.settings import MODULE_PATH, MODEL_PATH
+from src.settings import MODULE_PATH
 import os
 
 from azureml.core import Workspace
