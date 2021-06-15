@@ -134,6 +134,7 @@ outputs/
 
 # datasets
 FashionMNIST/
+data/MNIST/
 
 # folders
 runs/

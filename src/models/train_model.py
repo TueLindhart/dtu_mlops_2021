@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
+import joblib
 
 from azureml.core import Run
 # import numpy as np
@@ -145,6 +146,7 @@ def train():
 
         # Save model
         Path(MODEL_PATH).mkdir(parents=True, exist_ok=True)
+        # Save state dictionary for torch
         torch.save(model.state_dict(), os.path.join(
             MODEL_PATH, f"{args.name}.pth"))
 
@@ -180,6 +182,23 @@ def train():
         if args.show_plot:
             plt.show()
             plt.close()
+
+        # Save pickle model for azure
+        # Save the trained model
+        model_file = f'{args.name}.pkl'
+        joblib.dump(value=model, filename=model_file)
+        # Path(AZURE_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+        run.upload_file(name='outputs/'+model_file,
+                        path_or_stream='./'+model_file)
+
+        # Complete the run
+        run.complete()
+
+        # Register the model
+        run.register_model(model_path='outputs/'+model_file, model_name=args.name,
+                           tags={'Training context': 'MNIST exercise training'},
+                           properties={'Train Accuracy': run.get_metrics()['Train Accuracy'],
+                                       'Test Accuracy': run.get_metrics()['Test Accuracy']})
 
 
 def eval():
