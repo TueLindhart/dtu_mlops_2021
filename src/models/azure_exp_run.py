@@ -12,12 +12,12 @@ ws = Workspace.from_config(os.path.join(MODULE_PATH, 'config.json'))
 # print("------", MODULE_PATH)
 
 # From a pip requirements file
-# myenv = Environment.from_pip_requirements(name="azure_venv",
-#                                         file_path=os.path.join(MODULE_PATH, "requirements2.txt"))
+myenv = Environment.from_pip_requirements(name="azure_venv",
+                                          file_path=os.path.join(MODULE_PATH, "requirements2.txt"))
 
-# myenv.register(workspace=ws)
+myenv.register(workspace=ws)
 
-myenv = Environment.get(workspace=ws, name="azure_venv")
+# myenv = Environment.get(workspace=ws, name="azure_venv")
 # myenv = Environment("user-managed-env")
 # myenv.python.user_managed_dependencies = './venv/bin/python'
 
@@ -32,7 +32,7 @@ script_config = ScriptRunConfig(source_directory=MODULE_PATH,
                                 script='src/models/main.py',
                                 compute_target=my_compute_target,
                                 arguments=["train", "--lr", 1e-4, "--e",
-                                           1, "--bs", 128, "--name", model_name],
+                                           10, "--bs", 128, "--name", model_name],
                                 environment=myenv)
 
 script_config.run_config.target = my_compute_target
